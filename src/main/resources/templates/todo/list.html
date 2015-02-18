@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Todo List</title>
+    <style type="text/css">
+        .strike {
+            text-decoration: line-through;
+        }
+
+        .text-error {
+            color: #c60f13;
+        }
+
+        .alert {
+            border: 1px solid;
+        }
+
+        .alert-error {
+            background-color: #c60f13;
+            border-color: #970b0e;
+            color: white;
+        }
+
+        .alert-success {
+            background-color: #5da423;
+            border-color: #457a1a;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<h1>Todo List</h1>
+
+<div th:if="${resultMessage}" class="alert alert-success">
+    <span th:text="${resultMessage}">hoge</span>
+</div>
+<div th:if="${errorMessage}" class="alert alert-error">
+    <span th:text="${errorMessage}">hoge</span>
+</div>
+
+<div id="todoForm">
+    <form th:action="@{/todo/create}"
+          method="post" th:object="${todoForm}">
+        <input type="text" id="todoTitle" name="todoTitle" th:field="*{todoTitle}"/>
+        <span th:if="${#fields.hasErrors('todoTitle')}" th:errors="*{todoTitle}" class="text-error">error!</span>
+        <input type="submit" value="Create Todo"/>
+    </form>
+</div>
+<hr/>
+
+<div id="todoList">
+    <ul>
+        <li th:each="todo : ${todos}">
+            <span class="strike" th:if="${todo.finished}" th:text="${todo.todoTitle}"/>
+            <span th:unless="${todo.finished}" th:text="${todo.todoTitle}"/>
+
+            <form th:unless="${todo.finished}" th:action="@{/todo/finish}" method="post"
+                  style="display: inline-block;">
+                <input type="hidden" name="todoId" th:value="${todo.todoId}"/>
+                <input type="submit" value="Finish"/>
+            </form>
+            <form th:action="@{/todo/delete}" method="post"
+                  style="display: inline-block;">
+                <input type="hidden" name="todoId" th:value="${todo.todoId}"/>
+                <input type="submit" value="Delete"/>
+            </form>
+        </li>
+    </ul>
+</div>
+</body>
+</html>
